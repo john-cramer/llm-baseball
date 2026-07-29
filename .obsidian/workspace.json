@@ -1,0 +1,214 @@
+{
+  "main": {
+    "id": "b625f36ab4869f4d",
+    "type": "split",
+    "children": [
+      {
+        "id": "9b763ac1fcef6669",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4d6843add72b2086",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "details"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "1e2326772247aae5",
+    "type": "split",
+    "children": [
+      {
+        "id": "5434a9f57aed9132",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "a271d7b6be1771ba",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "6b10c4c1d833e718",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "cc8c8d5427f3b3d2",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a922568211a57249",
+    "type": "split",
+    "children": [
+      {
+        "id": "7e05030083d2e5f0",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d8d46fc12cd827b9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for details"
+            }
+          },
+          {
+            "id": "75b2049fd5dbc1b9",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from details"
+            }
+          },
+          {
+            "id": "23569d0ac35a6026",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "72ba4186018cfa53",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "dcad2e1e98c9a628",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of details"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "4d6843add72b2086",
+  "lastOpenFiles": [
+    "features/current-rosters/GPT5-6Sol/session.md",
+    "features/current-rosters/template/details.md",
+    "features/current-rosters/GPT5-6Sol/details.md",
+    "features/current-rosters/KimiK3/details.md",
+    "features/current-rosters/GPT5-6Sol/log.md",
+    "features/current-rosters/GLM5-2/details.md.md",
+    "features/current-rosters/Gemini3-1Pro/details.md",
+    "features/current-rosters/Fable5/details.md",
+    "features/current-rosters/Gemini3-1Pro/log.md",
+    "features/current-rosters/Gemini3-1Pro/session.md",
+    "features/current-rosters/Gemini3-1Pro/app.js",
+    "features/current-rosters/Gemini3-1Pro/style.css",
+    "features/current-rosters/Gemini3-1Pro/index.html",
+    "features/current-rosters/Gemini3-1Pro/plan.md",
+    "features/current-rosters/Fable5/log.md.tmp.10964.c358534fb73f",
+    "features/current-rosters/Qwen3-7Max/details.md",
+    "features/current-rosters/GPT5-6Sol/script.js",
+    "features/current-rosters/Qwen3-7Max/session.md",
+    "features/current-rosters/Fable5/index.html",
+    "features/current-rosters/Fable5/index.html.tmp.10964.6d2640f426a2",
+    "features/current-rosters/GPT5-6Sol/styles.css",
+    "features/current-rosters/KimiK3/temp/mlb-roster-bal.json",
+    "features/current-rosters/KimiK3/temp/chrome-profile/Default/Sessions/Session_13429772760221065",
+    "features/current-rosters/KimiK3/temp/screenshot-bal.png",
+    "features/current-rosters/GLM5-2/session-transcript.md"
+  ]
+}

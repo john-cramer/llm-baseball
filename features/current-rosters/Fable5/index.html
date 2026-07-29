@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Current Rosters — MLB Baseball Cards</title>
+<style>
+  :root{
+    --field:#0f3d2e;
+    --field-deep:#0a2c21;
+    --field-line:#1c5a44;
+    --chalk:#f7f3ea;
+    --card:#fffdf8;
+    --ink:#1b2620;
+    --muted:#68715f;
+    --stitch:#c8102e;
+    --clay:#b65432;
+    --edge:#e2dccb;
+    --good:#1a7f37;
+    --bad:#b3261e;
+    --shadow:0 1px 2px rgba(27,38,32,.08), 0 8px 24px rgba(27,38,32,.08);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    background:
+      radial-gradient(1200px 500px at 85% -200px, rgba(28,90,68,.10), transparent 70%),
+      var(--chalk);
+    color:var(--ink);
+    line-height:1.45;
+  }
+  a{color:inherit}
+  img{max-width:100%}
+
+  /* ── Top bar ─────────────────────────────────────────── */
+  .topbar{
+    background:linear-gradient(180deg,var(--field) 0%,var(--field-deep) 100%);
+    color:var(--chalk);
+    border-bottom:4px solid var(--stitch);
+  }
+  .topbar-inner{
+    max-width:1280px;margin:0 auto;padding:18px 24px;
+    display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand svg{flex:none}
+  .brand-title{
+    font-size:24px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+    line-height:1.1;white-space:nowrap;
+  }
+  .brand-sub{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#bfd4c6}
+  .season-pill{
+    margin-left:auto;
+    background:rgba(247,243,234,.12);
+    border:1px solid rgba(247,243,234,.35);
+    border-radius:999px;padding:7px 16px;
+    font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    display:flex;align-items:center;gap:8px;white-space:nowrap;
+  }
+  .live-dot{width:8px;height:8px;border-radius:50%;background:#7ee2a8;box-shadow:0 0 0 3px rgba(126,226,168,.25)}
+
+  .season-strip{
+    background:#efe9da;border-bottom:1px solid var(--edge);
+    font-size:13px;color:#4c5646;
+  }
+  .season-strip .inner{max-width:1280px;margin:0 auto;padding:7px 24px}
+
+  /* ── Layout ──────────────────────────────────────────── */
+  .layout{
+    max-width:1280px;margin:0 auto;padding:24px;
+    display:grid;grid-template-columns:minmax(0,1fr) 272px;gap:24px;
+    align-items:start;
+  }
+  main{min-width:0}
+
+  /* ── Team nav (the “dugout”) ─────────────────────────── */
+  .teamnav{
+    position:sticky;top:16px;
+    max-height:calc(100vh - 32px);overflow:auto;
+    background:var(--card);
+    border:1px solid var(--edge);border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:14px;
+    scrollbar-width:thin;
+  }
+  .teamnav h2{
+    margin:2px 4px 10px;font-size:12px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--muted);font-weight:800;
+  }
+  .league{margin-bottom:12px}
+  .league-head{
+    background:var(--field);color:var(--chalk);
+    font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    padding:7px 12px;border-radius:8px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .league-head .lg-abbr{opacity:.6;font-size:11px}
+  .division{margin-top:9px}
+  .division-head{
+    display:flex;align-items:center;gap:8px;
+    font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+    color:var(--clay);
+    margin:0 4px 4px;
+  }
+  .division-head::after{content:"";flex:1;border-top:2px dashed rgba(200,16,46,.35)}
+  .teamnav button.team{
+    display:flex;align-items:center;gap:9px;width:100%;
+    background:none;border:0;border-radius:8px;
+    padding:6px 8px;margin:1px 0;
+    font:inherit;font-size:13.5px;font-weight:600;color:var(--ink);
+    cursor:pointer;text-align:left;
+  }
+  .teamnav button.team:hover{background:#f0ebdd}
+  .teamnav button.team[aria-current="true"]{
+    background:var(--field);color:var(--chalk);
+  }
+  .teamnav button.team img{width:20px;height:20px;flex:none;object-fit:contain}
+  .nav-note{font-size:11.5px;color:var(--muted);margin:10px 4px 2px}
+
+  /* ── Welcome / loading / error states ────────────────── */
+  .statecard{
+    background:var(--card);border:1px solid var(--edge);border-radius:16px;
+    box-shadow:var(--shadow);
+    padding:56px 32px;text-align:center;
+  }
+  .statecard h2{margin:18px 0 6px;font-size:26px;letter-spacing:.02em}
+  .statecard p{margin:4px auto;max-width:52ch;color:var(--muted)}
+  .statecard .retry{
+    margin-top:18px;background:var(--field);color:var(--chalk);
+    border:0;border-radius:999px;padding:10px 26px;
+    font:inherit;font-weight:700;letter-spacing:.06em;cursor:pointer;
+  }
+  .statecard .retry:hover{background:var(--field-line)}
+
+  .skel{
+    background:linear-gradient(90deg,#eae4d4 25%,#f4f0e3 50%,#eae4d4 75%);
+    background-size:200% 100%;
+    animation:shimmer 1.2s linear infinite;
+    border-radius:8px;
+  }
+  @keyframes shimmer{to{background-position:-200% 0}}
+  .skel-overview{height:170px;border-radius:16px;margin-bottom:24px}
+  .skel-card{height:360px;border-radius:14px}
+
+  /* ── Team overview ───────────────────────────────────── */
+  .overview{
+    background:var(--card);border:1px solid var(--edge);border-radius:16px;
+    box-shadow:var(--shadow);
+    border-top:6px solid var(--team,var(--field));
+    padding:20px 24px;
+    display:flex;gap:24px;align-items:center;flex-wrap:wrap;
+  }
+  .overview .logo-well{
+    flex:none;width:112px;height:112px;border-radius:50%;
+    background:radial-gradient(circle at 50% 35%,#fff 0%,#f0ead9 100%);
+    border:3px solid var(--team,var(--field));
+    display:flex;align-items:center;justify-content:center;
+  }
+  .overview .logo-well img{width:78px;height:78px;object-fit:contain}
+  .overview .idblock{flex:1 1 240px;min-width:220px}
+  .overview h2{margin:0;font-size:28px;line-height:1.15;letter-spacing:.01em}
+  .overview .divline{
+    font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--clay);
+    margin-top:2px;
+  }
+  .facts{margin-top:10px;display:grid;gap:3px;font-size:14px}
+  .facts .fact{display:flex;gap:8px;align-items:baseline}
+  .facts .fact b{
+    flex:none;width:74px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);font-weight:800;
+  }
+  .tiles{flex:1 1 320px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;min-width:280px}
+  .tile{
+    background:linear-gradient(180deg,var(--field) 0%,var(--field-deep) 100%);
+    color:var(--chalk);
+    border-radius:12px;padding:12px 8px 10px;text-align:center;
+    border:1px solid rgba(0,0,0,.15);
+  }
+  .tile .t-label{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#a9c4b3;font-weight:700}
+  .tile .t-value{font-size:24px;font-weight:700;margin-top:3px;line-height:1.1}
+  .tile .t-sub{font-size:11px;color:#a9c4b3;margin-top:2px;min-height:14px}
+  .tile .up{color:#7ee2a8}
+  .tile .down{color:#ff9d94}
+
+  /* ── Section heads ───────────────────────────────────── */
+  .section-head{margin:30px 0 6px;display:flex;align-items:center;gap:14px}
+  .section-head h3{
+    margin:0;font-size:15px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;
+  }
+  .section-head::after{content:"";flex:1;border-top:2px dashed rgba(200,16,46,.4)}
+  .criteria{font-size:12.5px;color:var(--muted);margin:0 0 16px;max-width:90ch}
+
+  /* ── Player cards ────────────────────────────────────── */
+  .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+  .pcard{
+    background:var(--card);
+    border:1px solid var(--edge);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:10px;
+    display:flex;flex-direction:column;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .pcard:hover{transform:translateY(-3px);box-shadow:0 2px 4px rgba(27,38,32,.1),0 14px 32px rgba(27,38,32,.14)}
+  .photo{
+    position:relative;border-radius:9px;overflow:hidden;
+    border:3px solid var(--team,var(--field));
+    background:linear-gradient(180deg,var(--team,var(--field)) 0%,var(--team2,var(--field-deep)) 100%);
+    aspect-ratio:4/3.4;
+  }
+  .photo img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+  .photo .jersey{
+    position:absolute;right:9px;top:5px;
+    font-size:30px;font-weight:800;color:#fff;
+    text-shadow:0 1px 2px rgba(0,0,0,.55),0 0 10px rgba(0,0,0,.35);
+    font-style:italic;letter-spacing:.02em;
+  }
+  .photo .rolechip{
+    position:absolute;left:9px;top:9px;
+    background:var(--team,var(--field));color:#fff;
+    border:1px solid rgba(255,255,255,.6);
+    font-size:11px;font-weight:800;letter-spacing:.08em;
+    padding:3px 9px;border-radius:999px;
+  }
+  .nameplate{padding:10px 6px 2px}
+  .nameplate .pname{font-size:16.5px;font-weight:800;line-height:1.2}
+  .nameplate .pmeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .statrow{
+    margin-top:9px;padding-top:9px;
+    border-top:2px dashed rgba(200,16,46,.4);
+    display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+    text-align:center;
+  }
+  .stat .s-label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:800}
+  .stat .s-value{font-size:17px;font-weight:700;margin-top:1px}
+
+  /* ── Rest of roster ──────────────────────────────────── */
+  .rest{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+    gap:8px 18px;
+  }
+  .rest .row{
+    background:var(--card);border:1px solid var(--edge);border-radius:10px;
+    padding:8px 12px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .rest .num{
+    flex:none;width:30px;text-align:center;
+    font-size:13px;font-weight:800;color:var(--team,var(--field));
+    font-variant-numeric:tabular-nums;
+  }
+  .rest .who{min-width:0;flex:1}
+  .rest .who .n{font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .rest .who .d{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .rest .poschip{
+    flex:none;font-size:10.5px;font-weight:800;letter-spacing:.06em;
+    background:#eee8d8;color:#4c5646;border-radius:6px;padding:3px 7px;
+  }
+
+  /* ── Footer ──────────────────────────────────────────── */
+  footer{
+    margin-top:40px;
+    background:linear-gradient(180deg,var(--field) 0%,var(--field-deep) 100%);
+    color:#bfd4c6;border-top:4px solid var(--stitch);
+  }
+  .footer-inner{max-width:1280px;margin:0 auto;padding:26px 24px;font-size:12.5px}
+  .footer-inner p{margin:6px 0}
+  .footer-inner .attribution{color:#8fb09c}
+  .footer-inner a{color:#cfe4d7}
+
+  /* ── Responsive ──────────────────────────────────────── */
+  @media (max-width:1080px){
+    .layout{grid-template-columns:1fr}
+    .teamnav{position:static;max-height:none;order:-1}
+    .teamnav .leagues{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tiles{grid-template-columns:repeat(4,1fr)}
+  }
+  @media (max-width:680px){
+    .teamnav .leagues{grid-template-columns:1fr}
+    .cards{grid-template-columns:1fr}
+    .tiles{grid-template-columns:repeat(2,1fr)}
+    .brand-title{font-size:19px}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="20" fill="#f7f3ea" stroke="#1b2620" stroke-width="1.5"/>
+        <path d="M10 4 Q 20 22 10 40" fill="none" stroke="#c8102e" stroke-width="2" stroke-dasharray="3.5 3"/>
+        <path d="M34 4 Q 24 22 34 40" fill="none" stroke="#c8102e" stroke-width="2" stroke-dasharray="3.5 3"/>
+      </svg>
+      <div>
+        <div class="brand-title">Current Rosters</div>
+        <div class="brand-sub">MLB &middot; Baseball Card Edition</div>
+      </div>
+    </div>
+    <div class="season-pill"><span class="live-dot" aria-hidden="true"></span><span class="season-year">····</span> Season &middot; Live</div>
+  </div>
+</header>
+
+<div class="season-strip">
+  <div class="inner">
+    Rosters, stats, and standings reflect the <strong>current <span class="season-year">····</span> MLB season</strong>,
+    fetched live from the MLB Stats API each time this page loads.
+  </div>
+</div>
+
+<div class="layout">
+  <main id="main" aria-live="polite">
+    <!-- welcome / loading / error / team view rendered here -->
+  </main>
+
+  <nav class="teamnav" id="teamnav" aria-label="MLB teams">
+    <h2>The Dugout &middot; 30 Clubs</h2>
+    <div class="leagues" id="navLeagues">
+      <p class="nav-note">Loading teams…</p>
+    </div>
+    <p class="nav-note">Pick a club to load its active roster.</p>
+  </nav>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <p id="mlbCopyright">Data: MLB Stats API.</p>
+    <p class="attribution" id="selfAttribution">
+      This page was generated by <strong>Claude Fable&nbsp;5</strong>, an AI model from
+      <strong>Anthropic</strong>, on July&nbsp;29,&nbsp;2026. All rosters, statistics, standings, and
+      imagery are fetched live from the MLB Stats API at view time — nothing is bundled or mirrored.
+    </p>
+  </div>
+</footer>
+
+<script>
+"use strict";
+
+const API = "https://statsapi.mlb.com/api/v1";
+
+/* Team look & lore. Colors and mascots are presentation-side knowledge keyed by
+   the team IDs the API returns; mascot is null where a club has no official one
+   and the overview omits the row. All roster/stat data comes from the API. */
+const TEAM_META = {
+  108:{c:"#BA0021",c2:"#003263",mascot:null},                    // Angels — no official mascot
+  109:{c:"#A71930",c2:"#30ced8",mascot:"D. Baxter the Bobcat"},  // D-backs
+  110:{c:"#DF4601",c2:"#27251f",mascot:"The Oriole Bird"},       // Orioles
+  111:{c:"#BD3039",c2:"#0C2340",mascot:"Wally the Green Monster"},// Red Sox
+  112:{c:"#0E3386",c2:"#CC3433",mascot:"Clark the Cub"},         // Cubs
+  113:{c:"#C6011F",c2:"#27251f",mascot:"Mr. Redlegs"},           // Reds
+  114:{c:"#00385D",c2:"#E50022",mascot:"Slider"},                // Guardians
+  115:{c:"#33006F",c2:"#C4CED4",mascot:"Dinger"},                // Rockies
+  116:{c:"#0C2340",c2:"#FA4616",mascot:"Paws"},                  // Tigers
+  117:{c:"#002D62",c2:"#EB6E1F",mascot:"Orbit"},                 // Astros
+  118:{c:"#004687",c2:"#BD9B60",mascot:"Sluggerrr"},             // Royals
+  119:{c:"#005A9C",c2:"#A5ACAF",mascot:null},                    // Dodgers — no official mascot
+  120:{c:"#AB0003",c2:"#14225A",mascot:"Screech"},               // Nationals
+  121:{c:"#002D72",c2:"#FF5910",mascot:"Mr. Met"},               // Mets
+  133:{c:"#003831",c2:"#EFB21E",mascot:"Stomper"},               // Athletics
+  134:{c:"#27251F",c2:"#FDB827",mascot:"The Pirate Parrot"},     // Pirates
+  135:{c:"#2F241D",c2:"#FFC425",mascot:"The Swinging Friar"},    // Padres
+  136:{c:"#0C2C56",c2:"#005C5C",mascot:"Mariner Moose"},         // Mariners
+  137:{c:"#FD5A1E",c2:"#27251F",mascot:"Lou Seal"},              // Giants
+  138:{c:"#C41E3A",c2:"#0C2340",mascot:"Fredbird"},              // Cardinals
+  139:{c:"#092C5C",c2:"#8FBCE6",mascot:"Raymond"},               // Rays
+  140:{c:"#003278",c2:"#C0111F",mascot:"Rangers Captain"},       // Rangers
+  141:{c:"#134A8E",c2:"#E8291C",mascot:"Ace"},                   // Blue Jays
+  142:{c:"#002B5C",c2:"#D31145",mascot:"T.C. Bear"},             // Twins
+  143:{c:"#E81828",c2:"#002D72",mascot:"The Phillie Phanatic"},  // Phillies
+  144:{c:"#CE1141",c2:"#13274F",mascot:"Blooper"},               // Braves
+  145:{c:"#27251F",c2:"#C4CED4",mascot:"Southpaw"},              // White Sox
+  146:{c:"#00A3E0",c2:"#EF3340",mascot:"Billy the Marlin"},      // Marlins
+  147:{c:"#132448",c2:"#C4CED4",mascot:null},                    // Yankees — no official mascot
+  158:{c:"#12284B",c2:"#FFC52F",mascot:"Bernie Brewer"},         // Brewers
+};
+
+const state = {
+  season:null, teams:[], standings:null, standingsPromise:null,
+  abort:null, selectedId:null, copyrightSet:false,
+};
+
+const $  = (sel,root=document)=>root.querySelector(sel);
+const esc = s => String(s ?? "").replace(/[&<>"']/g,
+  ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+
+const logoUrl = id => `https://www.mlbstatic.com/team-logos/${id}.svg`;
+const headshotUrl = id =>
+  `https://img.mlbstatic.com/mlb-photos/image/upload/d_people:generic:headshot:67:current.png,w_426,q_auto:best/v1/people/${id}/headshot/67/current`;
+const headshotFallback = id => `https://midfield.mlbstatic.com/v1/people/${id}/spots/240`;
+const SILHOUETTE = "data:image/svg+xml," + encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 85"><rect width="100" height="85" fill="none"/><circle cx="50" cy="32" r="16" fill="rgba(255,255,255,.55)"/><path d="M20 85 Q20 56 50 56 Q80 56 80 85 Z" fill="rgba(255,255,255,.55)"/></svg>`);
+
+async function fetchJSON(url, signal){
+  const res = await fetch(url, {signal});
+  if(!res.ok) throw new Error(`MLB Stats API returned ${res.status} for ${url}`);
+  const json = await res.json();
+  if(json.copyright && !state.copyrightSet){
+    $("#mlbCopyright").textContent = json.copyright; // verbatim, from the live response
+    state.copyrightSet = true;
+  }
+  return json;
+}
+
+/* ── Bootstrap ──────────────────────────────────────────── */
+
+async function init(){
+  renderWelcome();
+  try{
+    const data = await fetchJSON(`${API}/teams?sportId=1`);
+    state.teams = (data.teams||[]).filter(t=>t.sport?.id===1 && t.active);
+    state.season = Number(state.teams[0]?.season) || null;
+    if(!state.season){
+      const s = await fetchJSON(`${API}/seasons/current?sportId=1`);
+      state.season = Number(s.seasons?.[0]?.seasonId);
+    }
+    document.querySelectorAll(".season-year").forEach(el=>el.textContent = state.season ?? "—");
+    state.standingsPromise = loadStandings();
+    renderNav();
+  }catch(err){
+    $("#navLeagues").innerHTML =
+      `<p class="nav-note">Could not reach the MLB Stats API (${esc(err.message)}). Check your connection and reload.</p>`;
+    renderError("Couldn’t load the league", err, ()=>location.reload());
+  }
+}
+
+async function loadStandings(){
+  try{
+    const data = await fetchJSON(`${API}/standings?leagueId=103,104&season=${state.season}&standingsTypes=regularSeason`);
+    const map = {};
+    for(const rec of data.records||[]){
+      for(const tr of rec.teamRecords||[]){
+        const last10 = (tr.records?.splitRecords||[]).find(r=>r.type==="lastTen");
+        map[tr.team.id] = {
+          wins: tr.leagueRecord?.wins, losses: tr.leagueRecord?.losses,
+          pct: tr.leagueRecord?.pct,
+          streak: tr.streak?.streakCode || null,
+          lastTen: last10 ? `${last10.wins}-${last10.losses}` : null,
+          divisionRank: tr.divisionRank, gamesBack: tr.gamesBack,
+          gamesPlayed: tr.gamesPlayed,
+        };
+      }
+    }
+    state.standings = map;
+  }catch(err){
+    state.standings = {}; // overview degrades to “—” rather than failing the page
+  }
+  return state.standings;
+}
+
+/* ── Navigation ─────────────────────────────────────────── */
+
+const LEAGUES = [{id:103,name:"American League",abbr:"AL"},{id:104,name:"National League",abbr:"NL"}];
+const DIVISIONS = ["East","Central","West"];
+
+function renderNav(){
+  const host = $("#navLeagues");
+  host.innerHTML = "";
+  for(const lg of LEAGUES){
+    const lgTeams = state.teams.filter(t=>t.league?.id===lg.id);
+    const lgEl = document.createElement("div");
+    lgEl.className = "league";
+    lgEl.innerHTML = `<div class="league-head">${esc(lg.name)}<span class="lg-abbr">${lg.abbr}</span></div>`;
+    for(const div of DIVISIONS){
+      const dTeams = lgTeams
+        .filter(t=>(t.division?.name||"").endsWith(div))
+        .sort((a,b)=>a.clubName.localeCompare(b.clubName));
+      if(!dTeams.length) continue;
+      const dEl = document.createElement("div");
+      dEl.className = "division";
+      dEl.innerHTML = `<div class="division-head">${div}</div>`;
+      for(const t of dTeams){
+        const btn = document.createElement("button");
+        btn.className = "team";
+        btn.type = "button";
+        btn.dataset.teamId = t.id;
+        btn.innerHTML = `<img src="${logoUrl(t.id)}" alt="" loading="lazy">${esc(t.clubName)}`;
+        btn.addEventListener("click", ()=>selectTeam(t.id));
+        dEl.appendChild(btn);
+      }
+      lgEl.appendChild(dEl);
+    }
+    host.appendChild(lgEl);
+  }
+}
+
+function markActive(teamId){
+  document.querySelectorAll(".teamnav button.team").forEach(b=>{
+    b.setAttribute("aria-current", String(Number(b.dataset.teamId)===teamId));
+  });
+}
+
+/* ── States ─────────────────────────────────────────────── */
+
+function renderWelcome(){
+  $("#main").innerHTML = `
+    <div class="statecard">
+      <svg width="110" height="110" viewBox="0 0 44 44" aria-hidden="true">
+        <circle cx="22" cy="22" r="20" fill="#fffdf8" stroke="#1b2620" stroke-width="1"/>
+        <path d="M10 4 Q 20 22 10 40" fill="none" stroke="#c8102e" stroke-width="2" stroke-dasharray="3.5 3"/>
+        <path d="M34 4 Q 24 22 34 40" fill="none" stroke="#c8102e" stroke-width="2" stroke-dasharray="3.5 3"/>
+      </svg>
+      <h2>Step up to the plate</h2>
+      <p>Pick a club from the dugout to deal out its current roster as a hand of baseball cards —
+         the nine everyday position players, the three most notable arms, and the rest of the squad.</p>
+      <p>Live data for the <strong><span class="season-year">${state.season ?? "current"}</span> MLB season</strong>.</p>
+    </div>`;
+}
+
+function renderLoading(team){
+  $("#main").innerHTML = `
+    <div class="skel skel-overview" role="status" aria-label="Loading ${esc(team.name)} roster"></div>
+    <div class="cards">${'<div class="skel skel-card"></div>'.repeat(6)}</div>`;
+}
+
+function renderError(title, err, retry){
+  const main = $("#main");
+  main.innerHTML = `
+    <div class="statecard">
+      <div style="font-size:44px" aria-hidden="true">&#9888;&#65039;</div>
+      <h2>${esc(title)}</h2>
+      <p>The MLB Stats API didn’t come through: <em>${esc(err.message)}</em></p>
+      <p>The ballpark Wi-Fi may be spotty — give it another swing.</p>
+      <button class="retry" type="button">Retry</button>
+    </div>`;
+  $(".retry", main).addEventListener("click", retry);
+}
+
+/* ── Team selection ─────────────────────────────────────── */
+
+async function selectTeam(teamId){
+  const team = state.teams.find(t=>t.id===teamId);
+  if(!team) return;
+  state.selectedId = teamId;
+  markActive(teamId);
+  if(state.abort) state.abort.abort();
+  const ac = new AbortController();
+  state.abort = ac;
+  renderLoading(team);
+  try{
+    const hydrate = `person(stats(group=[hitting,pitching],type=[season],season=${state.season}))`;
+    const [rosterData, coachData] = await Promise.all([
+      fetchJSON(`${API}/teams/${teamId}/roster?rosterType=active&hydrate=${hydrate}`, ac.signal),
+      fetchJSON(`${API}/teams/${teamId}/coaches`, ac.signal).catch(()=>null),
+      state.standingsPromise,
+    ]);
+    if(ac.signal.aborted || state.selectedId!==teamId) return;
+    renderTeam(team, rosterData.roster||[], coachData?.roster||[]);
+  }catch(err){
+    if(ac.signal.aborted || state.selectedId!==teamId) return;
+    renderError(`Couldn’t load the ${team.clubName}`, err, ()=>selectTeam(teamId));
+  }
+}
+
+/* ── Stat helpers ───────────────────────────────────────── */
+
+function statSplit(person, group){
+  const blk = (person?.stats||[]).find(s=>s.group?.displayName===group && s.splits?.length);
+  return blk ? blk.splits[0].stat : null;
+}
+const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+const paOf = e => statSplit(e.person,"hitting")?.plateAppearances ?? -1;
+
+function seasonFrac(){
+  const gp = state.standings?.[state.selectedId]?.gamesPlayed;
+  return gp ? Math.min(1, Math.max(0.15, gp/162)) : 0.6;
+}
+
+/* Nine position players: most plate appearances at C, 1B, 2B, 3B, SS and DH,
+   plus the top three outfielders by PA (OF kept unspecified per spec). Empty
+   slots (e.g. no listed DH) are filled by the best remaining bat. */
+function pickPositionPlayers(hitters){
+  const bucketOf = e => {
+    let a = e.position?.abbreviation;
+    if(["LF","CF","RF","OF"].includes(a)) return "OF";
+    if(["C","1B","2B","3B","SS","DH"].includes(a)) return a;
+    a = e.person?.primaryPosition?.abbreviation;
+    if(["LF","CF","RF","OF"].includes(a)) return "OF";
+    if(["C","1B","2B","3B","SS","DH"].includes(a)) return a;
+    return "DH"; // two-way players and utility types compete for the DH slot
+  };
+  const buckets = {C:[],"1B":[],"2B":[],"3B":[],SS:[],OF:[],DH:[]};
+  for(const e of hitters) buckets[bucketOf(e)].push(e);
+  for(const k in buckets) buckets[k].sort((a,b)=>paOf(b)-paOf(a));
+
+  const picked = [];
+  const taken = new Set();
+  const take = e => { if(e && !taken.has(e.person.id)){ taken.add(e.person.id); picked.push(e); return true; } return false; };
+
+  for(const slot of ["C","1B","2B","3B","SS"]) take(buckets[slot][0]);
+  for(const of3 of buckets.OF.slice(0,3)) take(of3);
+  take(buckets.DH[0]);
+
+  const leftovers = hitters.filter(e=>!taken.has(e.person.id)).sort((a,b)=>paOf(b)-paOf(a));
+  while(picked.length<9 && leftovers.length) take(leftovers.shift());
+  return picked;
+}
+
+/* Three pitchers: two starters + one reliever by a notability score
+   (criteria are also stated on the page). */
+function pitcherProfile(e){
+  const st = statSplit(e.person,"pitching");
+  const gs = st?.gamesStarted ?? 0;
+  const g  = st?.gamesPitched ?? st?.gamesPlayed ?? 0;
+  const ip = num(st?.inningsPitched) ?? 0;
+  const era = num(st?.era);
+  const eraPen = (era!==null && ip>0) ? era : 9.99;
+  const isStarter = gs>=3 && g>0 && gs/g>=0.5;
+  const score = isStarter
+    ? ip*1.5 + (st?.strikeOuts||0) + (st?.wins||0)*4 - eraPen*8
+    : (st?.saves||0)*5 + (st?.holds||0)*2 + (st?.strikeOuts||0)*0.5 + ip*0.3 - eraPen*6;
+  return {entry:e, st, isStarter, score};
+}
+function pickPitchers(pitchers, takenIds){
+  const pool = pitchers.filter(e=>!takenIds.has(e.person.id)).map(pitcherProfile);
+  const starters  = pool.filter(p=>p.isStarter).sort((a,b)=>b.score-a.score);
+  const relievers = pool.filter(p=>!p.isStarter).sort((a,b)=>b.score-a.score);
+  const picks = [...starters.slice(0,2), ...relievers.slice(0,1)];
+  const rest = pool.filter(p=>!picks.includes(p)).sort((a,b)=>b.score-a.score);
+  while(picks.length<3 && rest.length) picks.push(rest.shift());
+  return picks;
+}
+
+/* Four stats per card — always four — chosen by salience: each candidate is
+   scored against a full-season reference value (counting stats prorated to the
+   team’s games played), so the card leads with what the player is known for. */
+function fmtRate(v){ return v==null || v==="" ? "—" : String(v); }
+function hitterCardStats(st){
+  if(!st) return [["AVG","—"],["HR","—"],["RBI","—"],["SB","—"]];
+  const f = seasonFrac();
+  const cand = [
+    ["AVG", fmtRate(st.avg),        (num(st.avg)??0)/0.270],
+    ["OPS", fmtRate(st.ops),        (num(st.ops)??0)/0.760],
+    ["HR",  st.homeRuns ?? "—",     (st.homeRuns??0)/(24*f)],
+    ["RBI", st.rbi ?? "—",          (st.rbi??0)/(80*f)],
+    ["SB",  st.stolenBases ?? "—",  (st.stolenBases??0)/(18*f)],
+    ["R",   st.runs ?? "—",         (st.runs??0)/(75*f)],
+    ["H",   st.hits ?? "—",         (st.hits??0)/(140*f)],
+    ["2B",  st.doubles ?? "—",      (st.doubles??0)/(28*f)],
+  ];
+  return cand.sort((a,b)=>b[2]-a[2]).slice(0,4);
+}
+function pitcherCardStats(st){
+  if(!st) return [["ERA","—"],["W","—"],["SO","—"],["IP","—"]];
+  const f = seasonFrac();
+  const ip = num(st.inningsPitched) ?? 0;
+  const eraTrust = Math.min(1, ip/25); // tiny samples shouldn’t headline ERA/WHIP
+  const cand = [
+    ["ERA",  fmtRate(st.era),           (3.9/Math.max(num(st.era)??99,0.8))*eraTrust],
+    ["WHIP", fmtRate(st.whip),          (1.25/Math.max(num(st.whip)??99,0.6))*eraTrust],
+    ["W",    st.wins ?? "—",            (st.wins??0)/(14*f)],
+    ["SO",   st.strikeOuts ?? "—",      (st.strikeOuts??0)/(175*f)],
+    ["SV",   st.saves ?? "—",           (st.saves??0)/(28*f)],
+    ["HLD",  st.holds ?? "—",           (st.holds??0)/(18*f)],
+    ["IP",   fmtRate(st.inningsPitched), ip/(180*f)],
+    ["K/9",  fmtRate(st.strikeoutsPer9Inn), ((num(st.strikeoutsPer9Inn)??0)/9.2)*eraTrust],
+  ];
+  return cand.sort((a,b)=>b[2]-a[2]).slice(0,4);
+}
+
+/* ── Rendering ──────────────────────────────────────────── */
+
+const ordinal = n => { n=parseInt(n,10); if(!Number.isFinite(n)) return "—";
+  const s=["th","st","nd","rd"], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+
+function findManager(coaches){
+  const exact = coaches.find(c=>c.job==="Manager" || c.jobId==="MNGR");
+  if(exact) return exact;
+  return coaches.find(c=>/manager/i.test(c.job||"") && !/general|assistant|equipment|clubhouse/i.test(c.job||"")) || null;
+}
+
+function playerCardHTML(entry, role, st, stats){
+  const p = entry.person;
+  const jersey = entry.jerseyNumber || p.primaryNumber || "";
+  const posAbbr = role || entry.position?.abbreviation || p.primaryPosition?.abbreviation || "—";
+  const posName = role ? (role==="SP" ? "Starting Pitcher" : "Relief Pitcher")
+                       : (entry.position?.name || "");
+  const bt = (p.batSide?.code && p.pitchHand?.code) ? `B/T ${p.batSide.code}/${p.pitchHand.code}` : "";
+  const age = p.currentAge ? `Age ${p.currentAge}` : "";
+  return `
+  <article class="pcard">
+    <div class="photo">
+      <img src="${headshotUrl(p.id)}" alt="${esc(p.fullName)} headshot" loading="lazy"
+           onerror="this.onerror=()=>{this.onerror=null;this.src='${SILHOUETTE}'};this.src='${headshotFallback(p.id)}'">
+      <span class="rolechip">${esc(posAbbr)}</span>
+      ${jersey!=="" ? `<span class="jersey">#${esc(jersey)}</span>` : ""}
+    </div>
+    <div class="nameplate">
+      <div class="pname">${esc(p.fullName)}</div>
+      <div class="pmeta">${esc([posName, bt, age].filter(Boolean).join(" · "))}</div>
+    </div>
+    <div class="statrow">
+      ${stats.map(([label,value])=>`
+        <div class="stat"><div class="s-label">${esc(label)}</div><div class="s-value">${esc(value)}</div></div>`).join("")}
+    </div>
+  </article>`;
+}
+
+function restRowHTML(entry){
+  const p = entry.person;
+  const jersey = entry.jerseyNumber || p.primaryNumber || "–";
+  const pos = entry.position?.abbreviation || "—";
+  const bt = (p.batSide?.code && p.pitchHand?.code) ? `B/T ${p.batSide.code}/${p.pitchHand.code}` : "";
+  let line = "";
+  if(entry.position?.type==="Pitcher"){
+    const st = statSplit(p,"pitching");
+    if(st) line = `${fmtRate(st.era)} ERA · ${fmtRate(st.inningsPitched)} IP · ${st.strikeOuts??0} K`;
+  }else{
+    const st = statSplit(p,"hitting");
+    if(st) line = `${fmtRate(st.avg)} AVG · ${st.homeRuns??0} HR · ${st.rbi??0} RBI`;
+  }
+  const detail = [bt, line || "no season stats yet"].filter(Boolean).join(" · ");
+  return `
+  <div class="row">
+    <span class="num">${esc(jersey)}</span>
+    <span class="who"><span class="n">${esc(p.fullName)}</span><span class="d">${esc(detail)}</span></span>
+    <span class="poschip">${esc(pos)}</span>
+  </div>`;
+}
+
+function renderTeam(team, roster, coaches){
+  const meta = TEAM_META[team.id] || {c:"#0f3d2e",c2:"#0a2c21",mascot:null};
+  const stand = state.standings?.[team.id] || {};
+  const manager = findManager(coaches);
+
+  const hitters  = roster.filter(e=>e.position?.type!=="Pitcher");
+  const pitchers = roster.filter(e=>e.position?.type==="Pitcher" || e.position?.type==="Two-Way Player");
+
+  const positionPicks = pickPositionPlayers(hitters);
+  const takenIds = new Set(positionPicks.map(e=>e.person.id));
+  const pitcherPicks = pickPitchers(pitchers, takenIds);
+  pitcherPicks.forEach(p=>takenIds.add(p.entry.person.id));
+
+  const featuredCards = [
+    ...positionPicks.map(e=>playerCardHTML(e, null, null, hitterCardStats(statSplit(e.person,"hitting")))),
+    ...pitcherPicks.map(p=>playerCardHTML(p.entry, p.isStarter?"SP":"RP", p.st, pitcherCardStats(p.st))),
+  ].join("");
+
+  const rest = roster
+    .filter(e=>!takenIds.has(e.person.id))
+    .sort((a,b)=>(a.position?.type==="Pitcher")-(b.position?.type==="Pitcher") || a.person.fullName.localeCompare(b.person.fullName));
+
+  const record = (stand.wins!=null && stand.losses!=null) ? `${stand.wins}–${stand.losses}` : "—";
+  const streak = stand.streak || "—";
+  const streakDir = streak.startsWith("W") ? "up" : streak.startsWith("L") ? "down" : "";
+  const streakArrow = streakDir==="up" ? "▲" : streakDir==="down" ? "▼" : "";
+  const rank = stand.divisionRank ? ordinal(stand.divisionRank) : "—";
+  const gbNote = stand.gamesBack==null ? "" : (stand.gamesBack==="-" ? "leads division" : `${stand.gamesBack} GB`);
+
+  $("#main").innerHTML = `
+    <section class="overview" style="--team:${meta.c};--team2:${meta.c2}" aria-label="${esc(team.name)} overview">
+      <div class="logo-well">
+        <img src="${logoUrl(team.id)}" alt="${esc(team.name)} logo">
+      </div>
+      <div class="idblock">
+        <h2>${esc(team.name)}</h2>
+        <div class="divline">${esc(team.division?.name || "")}</div>
+        <div class="facts">
+          ${manager ? `<div class="fact"><b>Manager</b><span>${esc(manager.person.fullName)}${manager.job && manager.job!=="Manager" ? ` <em>(${esc(manager.job)})</em>` : ""}</span></div>` : ""}
+          ${meta.mascot ? `<div class="fact"><b>Mascot</b><span>${esc(meta.mascot)}</span></div>` : ""}
+          <div class="fact"><b>Stadium</b><span>${esc(team.venue?.name || "—")}</span></div>
+        </div>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="t-label">Record</div><div class="t-value">${esc(record)}</div><div class="t-sub">${stand.pct ? esc(stand.pct)+" pct" : ""}</div></div>
+        <div class="tile"><div class="t-label">Streak</div><div class="t-value">${esc(streak)} <span class="${streakDir}">${streakArrow}</span></div><div class="t-sub"></div></div>
+        <div class="tile"><div class="t-label">Last 10</div><div class="t-value">${esc(stand.lastTen || "—")}</div><div class="t-sub"></div></div>
+        <div class="tile"><div class="t-label">Division</div><div class="t-value">${esc(rank)}</div><div class="t-sub">${esc(gbNote)}</div></div>
+      </div>
+    </section>
+
+    <div class="section-head"><h3>Featured Twelve</h3></div>
+    <p class="criteria">
+      The nine position players are those with the most plate appearances at each spot — catcher, the four
+      infield positions, three outfielders (outfield left unspecified), and designated hitter. The three
+      pitchers are the roster’s most notable arms by current-season stats: <strong>starters</strong> ranked on
+      innings, strikeouts, and wins with an ERA penalty (top two shown), and <strong>relievers</strong> on
+      saves and holds with an ERA penalty (top one shown). Each card leads with the four stats that player
+      is most known for this season.
+    </p>
+    <div class="cards">${featuredCards}</div>
+
+    <div class="section-head"><h3>Rest of the Roster</h3></div>
+    <p class="criteria">The remaining ${rest.length} players on the ${esc(team.clubName)}’ active roster.</p>
+    <div class="rest" style="--team:${meta.c}">${rest.map(restRowHTML).join("")}</div>
+  `;
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+init();
+</script>
+</body>
+</html>

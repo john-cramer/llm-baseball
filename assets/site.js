@@ -14,6 +14,12 @@
     home: { id: "home", title: "Home", href: "index.html" },
     features: [
       {
+        id: "current-rosters",
+        title: "Current Rosters",
+        href: "features/current-rosters/index.html",
+        tag: "New"
+      },
+      {
         id: "feature-template",
         title: "Feature Template",
         href: "features/feature-template/index.html",
