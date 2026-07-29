@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "file": "README.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "details"
+              "title": "README"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for details"
+              "title": "Backlinks for README"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from details"
+              "title": "Outgoing links from README"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "features/current-rosters/GPT5-6Sol/details.md",
+                "file": "README.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of details"
+              "title": "Outline of README"
             }
           }
         ]
@@ -185,9 +185,10 @@
   },
   "active": "4d6843add72b2086",
   "lastOpenFiles": [
+    "features/current-rosters/prompt.md",
+    "features/current-rosters/GPT5-6Sol/details.md",
     "features/current-rosters/GPT5-6Sol/session.md",
     "features/current-rosters/template/details.md",
-    "features/current-rosters/GPT5-6Sol/details.md",
     "features/current-rosters/KimiK3/details.md",
     "features/current-rosters/GPT5-6Sol/log.md",
     "features/current-rosters/GLM5-2/details.md.md",

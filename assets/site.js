@@ -17,7 +17,7 @@
         id: "current-rosters",
         title: "Current Rosters",
         href: "features/current-rosters/index.html",
-        tag: "New"
+        tag: "Complete"
       },
       {
         id: "feature-template",
