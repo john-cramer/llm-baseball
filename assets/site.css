@@ -468,6 +468,19 @@ a {
   color: rgba(32, 48, 79, 0.75);
 }
 
+/* Verbatim prompt clipping — typewriter note with a dashed "cut-out" edge. */
+.prompt-quote {
+  margin: 12px 0 4px;
+  padding: 14px 18px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--cream);
+  border: 2px dashed var(--red);
+  border-radius: 4px;
+}
+
 /* --------------------------------------------------------------------------
    Footer
    -------------------------------------------------------------------------- */
